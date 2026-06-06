@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript DOM – Exercícios de Estudo</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --accent: #4af0a0;
+    --accent2: #4a9fff;
+    --accent3: #f0a04a;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --code-bg: #0a0c10;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,20,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .logo {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    width: 180px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 2px;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 80px 2rem 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(74,240,160,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 40px;
+  }
+
+  .tags {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid;
+  }
+
+  .tag-green { color: var(--accent); border-color: rgba(74,240,160,0.3); background: rgba(74,240,160,0.06); }
+  .tag-blue  { color: var(--accent2); border-color: rgba(74,159,255,0.3); background: rgba(74,159,255,0.06); }
+  .tag-orange{ color: var(--accent3); border-color: rgba(240,160,74,0.3); background: rgba(240,160,74,0.06); }
+
+  /* LAYOUT */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem 80px;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 64px;
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(74,240,160,0.08);
+    border: 1px solid rgba(74,240,160,0.2);
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+
+  /* EXERCISE CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    position: relative;
+  }
+
+  .card:hover {
+    border-color: rgba(74,240,160,0.25);
+    transform: translateY(-1px);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 32px;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .card-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .card.open .card-chevron {
+    transform: rotate(180deg);
+  }
+
+  .card-body {
+    display: none;
+    padding: 0 20px 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card.open .card-body { display: block; }
+
+  .card-desc {
+    font-size: 0.88rem;
+    color: #b0b8cc;
+    line-height: 1.7;
+    padding-top: 14px;
+  }
+
+  .dica {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(240,160,74,0.06);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.8rem;
+    color: #d4a574;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.6;
+  }
+
+  .dica strong {
+    color: var(--accent3);
+    font-weight: 700;
+  }
+
+  /* CHECKBOX */
+  .card-check {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .card-check:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .card-check:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1.5px;
+    width: 5px;
+    height: 8px;
+    border: 2px solid #0d0f14;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .card.done .card-title {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .card.done {
+    opacity: 0.6;
+  }
+
+  /* PRINT BUTTON */
+  .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: rgba(74,240,160,0.1);
+    color: var(--accent);
+    border-color: rgba(74,240,160,0.3);
+  }
+
+  .btn-primary:hover {
+    background: rgba(74,240,160,0.18);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border-color: var(--border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: #3a3f52;
+  }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  /* SCROLL DELAYS */
+  .section:nth-child(1) { animation-delay: 0.05s; }
+  .section:nth-child(2) { animation-delay: 0.1s; }
+  .section:nth-child(3) { animation-delay: 0.15s; }
+  .section:nth-child(4) { animation-delay: 0.2s; }
+  .section:nth-child(5) { animation-delay: 0.25s; }
+  .section:nth-child(6) { animation-delay: 0.3s; }
+  .section:nth-child(7) { animation-delay: 0.35s; }
+
+  @media print {
+    header, .actions { display: none; }
+    .card-body { display: block !important; }
+    .card-chevron { display: none; }
+    body { background: white; color: black; }
+    .card { border: 1px solid #ccc; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">JS DOM</span>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span id="progress-label" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted)">0 / 24</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <p class="hero-label">// guia de estudos</p>
+    <h1>JavaScript DOM</h1>
+    <p class="hero-sub">Exercícios de Manipulação do DOM</p>
+    <div class="tags">
+      <span class="tag tag-green">Seleção</span>
+      <span class="tag tag-blue">Manipulação</span>
+      <span class="tag tag-green">Eventos Mouse</span>
+      <span class="tag tag-blue">Eventos Teclado</span>
+      <span class="tag tag-orange">Desafios</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-value" id="stat-total">24</span>
+      <span class="stat-label">Exercícios</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="stat-done">0</span>
+      <span class="stat-label">Concluídos</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="stat-pct">0%</span>
+      <span class="stat-label">Progresso</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="expandAll()">Expandir tudo</button>
+    <button class="btn btn-ghost" onclick="collapseAll()">Recolher tudo</button>
+    <button class="btn btn-ghost" onclick="window.print()">Imprimir</button>
+  </div>
+
+  <!-- SEÇÃO 1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Selecionando Elementos (Queries)</h2>
+    </div>
+
+    <div class="card" data-id="1.1">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">1.1</span>
+        <span class="card-title">Seletor por ID</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um parágrafo com <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">id="mensagem"</code> e um botão. Ao clicar no botão, use <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">getElementById</code> para exibir no console o texto do parágrafo.</p>
+        <div class="dica"><strong>💡 Dica:</strong> document.getElementById('mensagem').textContent</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="1.2">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">1.2</span>
+        <span class="card-title">Seletor por Classe</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie três divs com a classe <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">caixa</code>. Use <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">getElementsByClassName</code> para contar quantas caixas existem e exiba o número em um alerta.</p>
+        <div class="dica"><strong>💡 Dica:</strong> getElementsByClassName retorna uma HTMLCollection (array-like) — use .length para contar.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="1.3">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">1.3</span>
+        <span class="card-title">querySelector e querySelectorAll</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie uma lista <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;ul&gt;</code> com 5 itens <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;li&gt;</code>. Usando <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">querySelector</code>, selecione o primeiro item e mude a cor do texto para vermelho. Usando <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">querySelectorAll</code>, selecione todos os itens e adicione uma borda pontilhada em cada um.</p>
+        <div class="dica"><strong>💡 Dica:</strong> querySelectorAll retorna uma NodeList — use .forEach() para iterar.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="1.4">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">1.4</span>
+        <span class="card-title">Seleção por Nome de Tag</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie vários botões com <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;button&gt;</code>. Use <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">getElementsByTagName</code> para adicionar um evento de clique a todos os botões de uma só vez (cada clique exibe "Botão clicado" no console).</p>
+        <div class="dica"><strong>💡 Dica:</strong> Converta a HTMLCollection com Array.from() antes de usar .forEach().</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Manipulação de Documento HTML</h2>
+    </div>
+
+    <div class="card" data-id="2.1">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">2.1</span>
+        <span class="card-title">innerHTML vs textContent</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie uma div vazia. Tenha dois botões: um que insere <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;strong&gt;texto em negrito&lt;/strong&gt;</code> via <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">innerHTML</code>, e outro que insere o mesmo texto via <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">textContent</code>. Observe a diferença de comportamento.</p>
+        <div class="dica"><strong>💡 Dica:</strong> innerHTML interpreta as tags HTML; textContent trata tudo como texto puro.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="2.2">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">2.2</span>
+        <span class="card-title">Alterar Atributos (src de imagem)</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Coloque uma imagem com <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">id="foto"</code> e dois botões: "Ligar" e "Desligar". Ao clicar em "Ligar", mude o <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">src</code> para uma imagem de lâmpada acesa; ao clicar em "Desligar", mude para apagada.</p>
+        <div class="dica"><strong>💡 Dica:</strong> Use element.setAttribute('src', url) ou element.src = url diretamente.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="2.3">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">2.3</span>
+        <span class="card-title">Manipular Classes CSS</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um quadrado vermelho com <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">class="quadrado"</code>. Usando JavaScript, adicione uma classe <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">borda-azul</code> que adiciona borda azul de 3px. Depois, faça um botão que alterna (toggle) essa classe a cada clique.</p>
+        <div class="dica"><strong>💡 Dica:</strong> element.classList.toggle('borda-azul') faz o toggle automaticamente.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="2.4">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">2.4</span>
+        <span class="card-title">Estilos Inline</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um botão que, quando clicado, aumenta o tamanho da fonte de todo o corpo da página em 2px a cada clique (estilo inline).</p>
+        <div class="dica"><strong>💡 Dica:</strong> Leia document.body.style.fontSize, converta com parseInt(), some 2 e reaplique com 'px'.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Manipulação de Elementos (Criar, Remover, Clonar)</h2>
+    </div>
+
+    <div class="card" data-id="3.1">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">3.1</span>
+        <span class="card-title">Criar e Adicionar Elemento</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie uma lista ordenada vazia <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;ol id="minhaLista"&gt;</code>. Um campo de texto e um botão "Adicionar". Ao clicar, pegue o valor do campo e adicione um novo <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;li&gt;</code> com esse texto ao final da lista. Limpe o campo após adicionar.</p>
+        <div class="dica"><strong>💡 Dica:</strong> document.createElement('li') e lista.appendChild(novoItem).</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="3.2">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">3.2</span>
+        <span class="card-title">Remover Elemento Específico</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Partindo do exercício anterior, adicione ao lado de cada <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;li&gt;</code> um botão "Remover" que, ao ser clicado, remove aquele item da lista.</p>
+        <div class="dica"><strong>💡 Dica:</strong> O botão precisa ser criado junto com o li. Use li.remove() ou pai.removeChild(li).</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="3.3">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">3.3</span>
+        <span class="card-title">Clonar Elemento</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um card (div com imagem, título e texto) com <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">id="cardOriginal"</code>. Um botão "Duplicar" que clona esse card e insere o clone logo abaixo do original. O clone deve ser funcional.</p>
+        <div class="dica"><strong>💡 Dica:</strong> element.cloneNode(true) — o argumento true clona também todos os filhos.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="3.4">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">3.4</span>
+        <span class="card-title">Substituir Elemento</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie uma div com um texto qualquer. Um botão que substitui o conteúdo dessa div por um novo parágrafo criado dinamicamente com um texto diferente.</p>
+        <div class="dica"><strong>💡 Dica:</strong> pai.replaceChild(novoElemento, elementoAntigo) ou element.replaceWith(novo).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 4 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2 class="section-title">Eventos e Interação – Mouse</h2>
+    </div>
+
+    <div class="card" data-id="4.1">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">4.1</span>
+        <span class="card-title">click</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie uma caixa colorida. Ao clicar nela, exiba um alerta: "Você clicou na caixa".</p>
+        <div class="dica"><strong>💡 Dica:</strong> element.addEventListener('click', () => alert('...'))</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="4.2">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">4.2</span>
+        <span class="card-title">mouseenter e mouseleave</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um quadrado que muda de cor quando o mouse entra (mouseenter) e volta à cor original quando sai (mouseleave).</p>
+        <div class="dica"><strong>💡 Dica:</strong> Guarde a cor original em uma variável antes de alterar.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="4.3">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">4.3</span>
+        <span class="card-title">dblclick</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um botão que, ao ser clicado duas vezes, altera o texto dele para "Duplo clique detectado!" e depois de 1 segundo volta ao texto original.</p>
+        <div class="dica"><strong>💡 Dica:</strong> setTimeout(() => botao.textContent = original, 1000) para reverter.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="4.4">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">4.4</span>
+        <span class="card-title">mousemove</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um pequeno retângulo que exibe as coordenadas X e Y do mouse dentro dele (atualizando em tempo real em um <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;span&gt;</code> ao lado).</p>
+        <div class="dica"><strong>💡 Dica:</strong> Use event.offsetX e event.offsetY para coordenadas relativas ao elemento.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 5 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2 class="section-title">Eventos e Interação – Teclado</h2>
+    </div>
+
+    <div class="card" data-id="5.1">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">5.1</span>
+        <span class="card-title">keydown – Exibir Tecla Pressionada</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um campo de texto <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;input&gt;</code>. Ao digitar qualquer tecla, exiba no console o valor da tecla pressionada (use <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">event.key</code>).</p>
+        <div class="dica"><strong>💡 Dica:</strong> input.addEventListener('keydown', (e) => console.log(e.key))</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="5.2">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">5.2</span>
+        <span class="card-title">keyup – Contador de Caracteres</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie uma textarea com um limite de 140 caracteres. Mostre um contador regressivo abaixo que atualiza a cada keyup, indicando quantos caracteres ainda podem ser digitados.</p>
+        <div class="dica"><strong>💡 Dica:</strong> Calcule: 140 - textarea.value.length. Considere usar maxlength no HTML também.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="5.3">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">5.3</span>
+        <span class="card-title">Impedir Teclas Específicas</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um campo de texto que só aceite números. Use keydown para impedir que letras ou símbolos sejam digitados (<code style="color:var(--accent);font-family:'JetBrains Mono',monospace">event.preventDefault</code>).</p>
+        <div class="dica"><strong>💡 Dica:</strong> if (!/^[0-9]$/.test(e.key) && e.key !== 'Backspace') e.preventDefault()</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="5.4">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">5.4</span>
+        <span class="card-title">Atalho de Teclado – Enter</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um campo de texto e um botão de busca. Ao pressionar a tecla "Enter" dentro do campo, dispare a mesma ação que o botão (exibir um alerta com o texto digitado).</p>
+        <div class="dica"><strong>💡 Dica:</strong> if (e.key === 'Enter') buscar() — extraia a lógica em uma função para reutilizar.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 6 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <h2 class="section-title">Desafios Combinados</h2>
+    </div>
+
+    <div class="card" data-id="6.1">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">6.1</span>
+        <span class="card-title">Lista de Tarefas (To-Do)</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um app de tarefas com: campo de texto + botão "Adicionar"; cada tarefa como <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">&lt;li&gt;</code> com texto e botão "Concluir"; ao concluir, aplicar <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">text-decoration: line-through</code>; botão "Remover todas concluídas" que remove as tarefas riscadas. Use querySelectorAll, eventos de clique, manipulação de classes e criação/remoção de elementos.</p>
+        <div class="dica"><strong>💡 Dica:</strong> querySelectorAll('li.concluida').forEach(li => li.remove())</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="6.2">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">6.2</span>
+        <span class="card-title">Drag & Drop Simplificado com Mouse</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um quadrado que possa ser arrastado dentro de um contêiner maior. Eventos: mousedown, mousemove, mouseup. Atualize a posição (top/left) do quadrado conforme o movimento do mouse. (Não use HTML5 drag-and-drop; implemente manualmente.)</p>
+        <div class="dica"><strong>💡 Dica:</strong> No mousedown salve o offset cursor-elemento. No mousemove atualize top/left. No mouseup pare de mover. Use position: absolute no quadrado e position: relative no contêiner.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="6.3">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">6.3</span>
+        <span class="card-title">Editor de Teclas Especiais</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie uma div editável (<code style="color:var(--accent);font-family:'JetBrains Mono',monospace">contenteditable="true"</code>). Mostre um painel ao lado com: <strong>Ctrl+B</strong> → negrito, <strong>Ctrl+I</strong> → itálico, <strong>Ctrl+U</strong> → sublinhado.</p>
+        <div class="dica"><strong>💡 Dica:</strong> Use keydown detectando e.ctrlKey && e.key === 'b'. document.execCommand('bold') ainda funciona para fins de estudo. Lembre de e.preventDefault() para não acionar atalhos do navegador.</div>
+      </div>
+    </div>
+
+    <div class="card" data-id="6.4">
+      <div class="card-header" onclick="toggle(this)">
+        <input type="checkbox" class="card-check" onclick="check(event,this)">
+        <span class="card-num">6.4</span>
+        <span class="card-title">Galeria de Imagens Dinâmica</span>
+        <svg class="card-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 6 8 10 12 6"/></svg>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Crie um array de URLs de imagens. Exiba uma miniatura da primeira imagem. Botões "Próximo" e "Anterior" que trocam a imagem principal. Adicione também um campo de texto para adicionar uma nova URL à galeria (dinamicamente). Use manipulação de DOM, eventos de clique e seleção de elementos.</p>
+        <div class="dica"><strong>💡 Dica:</strong> Use um índice atual (let index = 0) e garanta que ele não ultrapasse os limites do array (0 e array.length - 1).</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'dom-exercises-done';
+
+  function getSaved() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+  }
+
+  function save(id, val) {
+    const data = getSaved();
+    data[id] = val;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function toggle(header) {
+    header.closest('.card').classList.toggle('open');
+  }
+
+  function check(e, checkbox) {
+    e.stopPropagation();
+    const card = checkbox.closest('.card');
+    const id = card.dataset.id;
+    card.classList.toggle('done', checkbox.checked);
+    save(id, checkbox.checked);
+    updateStats();
+  }
+
+  function updateStats() {
+    const all = document.querySelectorAll('.card-check');
+    const done = document.querySelectorAll('.card-check:checked').length;
+    const total = all.length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('stat-done').textContent = done;
+    document.getElementById('stat-pct').textContent = pct + '%';
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = done + ' / ' + total;
+  }
+
+  function expandAll() {
+    document.querySelectorAll('.card').forEach(c => c.classList.add('open'));
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('open'));
+  }
+
+  // Restore saved state
+  const saved = getSaved();
+  document.querySelectorAll('.card').forEach(card => {
+    const id = card.dataset.id;
+    if (saved[id]) {
+      card.querySelector('.card-check').checked = true;
+      card.classList.add('done');
+    }
+  });
+  updateStats();
+</script>
+</body>
+</html>
