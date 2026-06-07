@@ -1,3 +1,51 @@
+# En
+
+# 📄 JavaScript DOM Exercises
+
+A collection of practical exercises for learning DOM manipulation with vanilla JavaScript.
+
+## About
+
+This material was generated with the help of **Artificial Intelligence (Claude, by Anthropic)** for educational purposes only. The exercises cover the core concepts of DOM manipulation and are aimed at anyone learning front-end JavaScript.
+
+## Contents
+
+| # | Topic |
+|---|-------|
+| 1 | Selecting elements (`getElementById`, `querySelector`, etc.) |
+| 2 | Manipulating content, attributes and styles |
+| 3 | Creating, removing and cloning elements |
+| 4 | Mouse events (`click`, `mouseenter`, `mousemove`…) |
+| 5 | Keyboard events (`keydown`, `keyup`, `preventDefault`…) |
+| 6 | Combined challenges (To-Do, Drag & Drop, Image Gallery…) |
+
+**24 exercises** in total, each with implementation hints.
+
+## Files
+
+- `exercicios_dom_javascript.html` — interactive version with progress tracking and checkboxes
+
+## How to use
+
+Open the `.html` file directly in your browser. No installation required.
+
+For each exercise, create a separate `.html` file and implement the solution from scratch. The goal is to practice — avoid looking up ready-made answers before giving it a try.
+
+## Disclaimer
+
+> This content was AI-generated and may contain inaccuracies. It is intended as a starting point for study. Always refer to the [official MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) for deeper understanding.
+
+
+
+
+# --------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+# Pt-BR
+
+
 # 📄 Exercícios de JavaScript DOM
 
 Coleção de exercícios práticos para aprendizado de manipulação do DOM com JavaScript puro.
