@@ -1,0 +1,19 @@
+.quadrado {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    border-radius: 30%;
+    margin-bottom: 20px;
+    transition: border 0.2s ease;
+}
+
+.borda-azul {
+    border: 3px solid blue;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;    
+    height: 100vh;
+}
